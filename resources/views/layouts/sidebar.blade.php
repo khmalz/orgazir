@@ -1,7 +1,7 @@
 <aside class="fixed left-0 top-0 z-40 h-screen w-52 -translate-x-full transition-transform sm:w-64 sm:translate-x-0"
     id="separator-sidebar" aria-label="Sidebar">
     <div class="h-full overflow-y-auto bg-gray-50 px-3 py-4 dark:bg-gray-800">
-        <h2 class="mb-3 text-center text-3xl font-semibold">Orgazir</h2>
+        <h2 class="mb-3 text-center text-3xl font-semibold text-blue-900">Orgazir</h2>
         <ul class="space-y-2 px-1 font-medium">
             <li>
                 <a class="{{ request()->routeIs('dashboard') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
@@ -18,8 +18,8 @@
             </li>
             <h4 class="py-1 text-sm font-medium text-slate-700">Produk</h4>
             <li>
-                <a class="{{ request()->routeIs('product.list') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
-                    href="#">
+                <a class="{{ request()->routeIs('product.index') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
+                    href="{{ route('product.index') }}">
                     <svg class="h-5 w-5 flex-shrink-0 transition duration-75" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd"
@@ -49,7 +49,7 @@
             </li>
             <li>
                 <a class="{{ request()->routeIs('transaction.history') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
-                    href="#">
+                    href="{{ route('transaction.history') }}">
                     <svg class="h-5 w-5 flex-shrink-0 transition duration-75" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd"
@@ -59,23 +59,10 @@
                     <span class="ms-3 flex-1 whitespace-nowrap">History</span>
                 </a>
             </li>
-            <h4 class="py-1 text-sm font-medium text-slate-700">Laporan</h4>
-            <li>
-                <a class="{{ request()->routeIs('report.sale') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
-                    href="#">
-                    <svg class="h-5 w-5 flex-shrink-0 transition duration-75" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path fill-rule="evenodd"
-                            d="M9 7V2.2a2 2 0 0 0-.5.4l-4 3.9a2 2 0 0 0-.3.5H9Zm2 0V2h7a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Zm-1 9a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2Zm2-5c.6 0 1 .4 1 1v6a1 1 0 1 1-2 0v-6c0-.6.4-1 1-1Zm4 4a1 1 0 1 0-2 0v3a1 1 0 1 0 2 0v-3Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span class="ms-3 flex-1 whitespace-nowrap">Penjualan</span>
-                </a>
-            </li>
             <h4 class="py-1 text-sm font-medium text-slate-700">Akun</h4>
             <li>
-                <a class="{{ request()->routeIs('cashier') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
-                    href="#">
+                <a class="{{ request()->routeIs('cashier.index') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
+                    href="{{ route('cashier.index') }}">
                     <svg class="h-5 w-5 flex-shrink-0 transition duration-75" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                         <path

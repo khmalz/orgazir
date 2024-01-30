@@ -22,4 +22,16 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
+Route::get('/product/list', function () {
+    return view('product.index');
+})->name('product.index');
+
+Route::get('/cashier/list', function () {
+    return view('cashier.index');
+})->name('cashier.index');
+
+Route::get('/transaction/history', function () {
+    return view('transaction.history');
+})->name('transaction.history');
+
 require __DIR__ . '/auth.php';
