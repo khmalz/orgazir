@@ -15,10 +15,10 @@
                             Total Item
                         </th>
                         <th class="px-6 py-3" scope="col">
-                            Diskon
+                            Total Harga
                         </th>
                         <th class="px-6 py-3" scope="col">
-                            Total Harga
+                            Tanggal
                         </th>
                         <th class="px-6 py-3" scope="col">
                             Action
@@ -35,10 +35,10 @@
                             2
                         </td>
                         <td class="px-6 py-4">
-                            0
+                            10.000
                         </td>
                         <td class="px-6 py-4">
-                            8.000
+                            21 Januari 2024
                         </td>
                         <td class="px-6 py-4">
                             <a class="font-medium text-blue-600 hover:underline" href="#">Edit</a>

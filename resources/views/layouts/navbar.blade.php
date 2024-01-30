@@ -1,4 +1,4 @@
-<nav class="fixed z-40 w-full border-b border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-900 sm:ps-64">
+<nav class="fixed z-20 w-full border-b border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-900 sm:ps-64">
     <div class="flex flex-wrap items-center justify-between p-4 sm:justify-end">
         <button
             class="ms-3 mt-2 inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 sm:hidden"

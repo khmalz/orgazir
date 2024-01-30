@@ -1,4 +1,4 @@
-<aside class="fixed left-0 top-0 z-40 h-screen w-52 -translate-x-full transition-transform sm:w-64 sm:translate-x-0"
+<aside class="fixed left-0 top-0 z-30 h-screen w-52 -translate-x-full transition-transform sm:w-64 sm:translate-x-0"
     id="separator-sidebar" aria-label="Sidebar">
     <div class="h-full overflow-y-auto bg-gray-50 px-3 py-4 dark:bg-gray-800">
         <h2 class="mb-3 text-center text-3xl font-semibold text-blue-900">Orgazir</h2>
