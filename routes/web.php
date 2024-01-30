@@ -34,4 +34,8 @@ Route::get('/transaction/history', function () {
     return view('transaction.history');
 })->name('transaction.history');
 
+Route::get('/transaction/pay', function () {
+    return view('transaction.index');
+})->name('transaction.pay');
+
 require __DIR__ . '/auth.php';

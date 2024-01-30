@@ -33,7 +33,7 @@
             <h4 class="py-1 text-sm font-medium text-slate-700">Transaksi</h4>
             <li>
                 <a class="{{ request()->routeIs('transaction.pay') ? 'text-blue-500' : 'text-gray-900' }} group flex items-center rounded-lg p-2 hover:bg-gray-100"
-                    href="#">
+                    href="{{ route('transaction.pay') }}">
                     <svg class="h-5 w-5 flex-shrink-0 transition duration-75" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd"
