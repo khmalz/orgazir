@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->string('name');
-            $table->enum('stock', ['available', 'sold']);
+            $table->enum('stock', ['available', 'sold'])->default('available');
             $table->integer('standard_price');
             $table->string('image');
             $table->timestamps();

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,8 +35,6 @@ Route::get('/transaction/history', function () {
     return view('transaction.history');
 })->name('transaction.history');
 
-Route::get('/transaction/pay', function () {
-    return view('transaction.index');
-})->name('transaction.pay');
+Route::get('/transaction/pay', [TransactionController::class, 'index'])->name('transaction.pay');
 
 require __DIR__ . '/auth.php';

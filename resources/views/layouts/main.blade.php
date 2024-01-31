@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap"
         rel="stylesheet">
 
+    @stack('styles')
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -21,6 +23,29 @@
         @yield('content')
     </div>
 
+    <script>
+        function decrement(inputId) {
+            updateCounter(inputId, -1);
+        }
+
+        function increment(inputId) {
+            updateCounter(inputId, 1);
+        }
+
+        function updateCounter(inputId, step) {
+            const inputElement = $(`#${inputId}`);
+            if (inputElement.length) {
+                let minValue = parseInt(inputElement.data('counter-min')) || 1;
+                let currentValue = parseInt(inputElement.val()) || minValue;
+
+                // Pastikan nilai tidak kurang dari nilai minimum
+                currentValue = Math.max(currentValue + step, minValue);
+
+                inputElement.val(currentValue).trigger('change');
+            }
+        }
+    </script>
+    @stack('scripts')
 </body>
 
 </html>
