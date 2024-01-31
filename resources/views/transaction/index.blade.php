@@ -47,11 +47,11 @@
                 </div>
                 <form class="mb-6" method="POST" action="{{ route('transaction.store') }}">
                     @csrf
-                    <input id="items-input" name="items" type="text">
-                    <input id="itemtotal-input" name="item_total" type="text" value="0">
-                    <input id="subtotal-input" name="subtotal" type="text" value="0">
-                    <input id="discount-input" name="discount" type="text" value="0">
-                    <input id="total-input" name="total" type="text" value="0">
+                    <input id="items-input" name="items" type="hidden">
+                    <input id="itemtotal-input" name="item_total" type="hidden" value="0">
+                    <input id="subtotal-input" name="subtotal" type="hidden" value="0">
+                    <input id="discount-input" name="discount" type="hidden" value="0">
+                    <input id="total-input" name="total" type="hidden" value="0">
 
                     <button
                         class="mb-2 mt-4 flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
