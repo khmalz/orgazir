@@ -88,31 +88,18 @@
         let cart = [];
 
         function calculateTotals() {
-            let subtotal = 0;
-
-            // Iterate through each item in the cart
-            for (let item of cart) {
+            const subtotal = cart.reduce((acc, item) => {
                 const quantity = parseInt(item.quantity) || 1;
-                const price = parseFloat(item.standard_price) || 0;
-                console.log(item.standard_price)
+                const price = parseFloat(item.standard_price);
 
-                subtotal += quantity * price;
-            }
+                return acc + quantity * price;
+            }, 0);
 
-            // Assume a discount of 0% (no discount)
             const discountPercentage = 10;
             const discount = (subtotal * discountPercentage) / 100;
 
-            // Calculate total after discount
             const total = subtotal - discount;
 
-            console.log({
-                total,
-                discount,
-                subtotal
-            })
-
-            // Save the results to HTML elements
             $('#total-price').text(total);
             $('#total-diskon').text(`${discountPercentage}%`);
             $('#sub-total-price').text(subtotal);
@@ -125,19 +112,21 @@
         function addToCart(button) {
             let data = $(button).closest('#card-header').data('product');
             if (!isProductInCart(data.id)) {
-                cart.push(data);
-                updateCartContainer();
+                cart.push({
+                    ...data,
+                    quantity: 1
+                });
 
                 $(button).removeClass('card-button-unactive').addClass('card-button-active')
-                    .attr('onclick', '') // Menghapus atribut onclick
+                    .attr('onclick', '')
                     .text('Terpilih');
 
+                updateCartContainer();
                 calculateTotals()
             }
         }
 
         function removeFromCart(productId) {
-            // Buat array baru tanpa produk yang akan dihapus
             cart = cart.filter(item => item.id !== productId);
 
             const buttonId = `#item-${productId}`;
@@ -152,6 +141,9 @@
         function updatePrice(productId) {
             const quantityInput = $(`#quantity-product-${productId}`);
             const quantityValue = quantityInput.val() || 1;
+
+            const productInCart = cart.find(item => item.id === productId);
+            if (productInCart) productInCart.quantity = quantityValue;
 
             const standardPrice = $(`#standard-price-product-${productId}`).data('standard-price');
 
@@ -238,7 +230,6 @@
                     </div>
                     `;
 
-                // Tambahkan elemen produk ke dalam container
                 cartContainer.append(productHtml);
             });
         }
