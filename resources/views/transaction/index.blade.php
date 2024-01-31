@@ -95,7 +95,7 @@
                 return acc + quantity * price;
             }, 0);
 
-            const discountPercentage = 10;
+            const discountPercentage = subtotal >= 200000 ? 10 : (subtotal >= 100000 ? 5 : 0);
             const discount = (subtotal * discountPercentage) / 100;
 
             const total = subtotal - discount;
@@ -112,10 +112,16 @@
         function addToCart(button) {
             let data = $(button).closest('#card-header').data('product');
             if (!isProductInCart(data.id)) {
-                cart.push({
-                    ...data,
+                const product = {
+                    id: data.id,
+                    category_id: data.category_id,
+                    name: data.name,
+                    standard_price: data.standard_price,
+                    image: data.image,
                     quantity: 1
-                });
+                }
+
+                cart.push(product);
 
                 $(button).removeClass('card-button-unactive').addClass('card-button-active')
                     .attr('onclick', '')
