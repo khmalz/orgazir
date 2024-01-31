@@ -68,8 +68,8 @@
                     <tr>
                         <td>{{ $item['name'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{{ number_format($item['standard_price'], 0, ',', '.') }}</td>
-                        <td>{{ number_format($item['quantity'] * $item['standard_price'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($item['price'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($item['quantity'] * $item['price'], 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>

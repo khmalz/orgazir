@@ -97,7 +97,7 @@
         function calculateTotals() {
             const subtotal = cart.reduce((acc, item) => {
                 const quantity = parseInt(item.quantity) || 1;
-                const price = parseFloat(item.standard_price);
+                const price = parseFloat(item.price);
 
                 return acc + quantity * price;
             }, 0);
@@ -138,7 +138,7 @@
                     id: data.id,
                     category_id: data.category_id,
                     name: data.name,
-                    standard_price: data.standard_price,
+                    price: data.standard_price,
                     image: data.image,
                     quantity: 1
                 }
@@ -167,18 +167,58 @@
         }
 
         function updatePrice(productId) {
-            const quantityInput = $(`#quantity-product-${productId}`);
-            const quantityValue = quantityInput.val() || 1;
+            const quantityValue = $(`#quantity-product-${productId}`).val();
+
+            const standardPrice = $(`#standard-price-product-${productId}`);
+            const price = standardPrice.attr('data-price');
+            const totalPrice = quantityValue * price;
+
+            $(`#price-input-${productId}`).val(totalPrice);
+            $(`#total-price-product-${productId}`).text(totalPrice);
+            standardPrice.text(price)
 
             const productInCart = cart.find(item => item.id === productId);
-            if (productInCart) productInCart.quantity = quantityValue;
+            if (productInCart) {
+                productInCart.quantity = quantityValue;
+                productInCart.price = price;
+            }
 
-            const standardPrice = $(`#standard-price-product-${productId}`).data('standard-price');
+            calculateTotals();
+        }
 
-            const totalPrice = quantityValue * standardPrice;
+        function toggleEditPrice(productId) {
+            const editPriceSection = $(`#edit-price-product-${productId}`);
 
-            $(`#total-price-product-${productId}`).text(totalPrice);
-            calculateTotals()
+            editPriceSection.toggleClass('hidden').toggleClass('grid');
+        }
+
+        function customPrice(el, productId) {
+            const customPrice = $(el).val();
+            const standardPriceText = $(`#standard-price-product-${productId}`);
+            standardPriceText.attr('data-price', customPrice)
+
+            updatePrice(productId);
+        }
+
+        function toggleCustomPriceInput(productId) {
+            const customPriceInput = $(`#input-cuspr-${productId}`);
+            const customPriceLabel = $(`#cuspr-${productId}`);
+            const isChecked = customPriceLabel.prop('checked');
+
+            customPriceInput.prop('disabled', !isChecked).val(!isChecked ? '' : customPriceInput.val());
+
+            if (!isChecked) {
+                resetStandardPrice(productId);
+            }
+        }
+
+        function resetStandardPrice(productId) {
+            const standardPriceText = $(`#standard-price-product-${productId}`);
+            const standardPrice = standardPriceText.attr('data-standard-price');
+
+            $(`#standard-price-product-${productId}`).attr('data-price', standardPrice);
+
+            updatePrice(productId);
         }
 
         function updateCartContainer() {
@@ -189,16 +229,17 @@
             cart.forEach((product, index) => {
                 let productHtml = `
                     <div id="cart-${product.id}">
+                        <input type="hidden" id="price-input-${product.id}" value="${product.price}">
                         <div class="flex items-center justify-between transition-all duration-500">
                             <div class="flex items-center space-x-1.5">
                                 <img class="w-20 h-20 border-2 border-white rounded-lg " src="${product.image}" alt="${product.name}" />
                                 <div>
                                     <h6 class="text-base font-medium">${product.name}</h6>
-                                    <div class="flex items-center">
-                                        <p class="inline-block text-sm font-medium text-gray-800" data-old-standard-price="${product.standard_price}" data-standard-price="${product.standard_price}" id="standard-price-product-${product.id}">${product.standard_price}</p>
+                                    <div class="flex items-center group">
+                                        <p class="inline-block text-sm font-medium text-gray-800" data-standard-price="${product.price}" data-price="${product.price}" id="standard-price-product-${product.id}">${product.price}</p>
                                         <span class="mx-1">|</span>
-                                        <p class="inline-block text-sm font-medium text-pink-600" id="total-price-product-${product.id}">${product.standard_price}</p>
-                                        <button onclick="toggleEditPrice(${product.id})" class="ms-1.5 hidden h-6 w-7 items-center justify-center rounded border-gray-300 bg-gray-100 p-1 hover:bg-gray-200 focus:outline-none focus:ring-0" id="edit-button-product-${product.id}" type="button">
+                                        <p class="inline-block text-sm font-medium text-pink-600" id="total-price-product-${product.id}">${product.price}</p>
+                                        <button onclick="toggleEditPrice(${product.id})" class="ms-1.5 hidden group-hover:flex h-6 w-7 items-center justify-center rounded border-gray-300 bg-gray-100 p-1 hover:bg-gray-200 focus:outline-none focus:ring-0" id="edit-button-product-${product.id}" type="button">
                                             <svg class="h-3.5 w-3.5 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="current" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.8 17.8-6.4 2.1 2.1-6.4m4.3 4.3L19 9a3 3 0 0 0-4-4l-8.4 8.6m4.3 4.3-4.3-4.3m2.1 2.1L15 9.1m-2.1-2 4.2 4.2" />
                                             </svg>
@@ -220,6 +261,7 @@
                                     type="text"
                                     aria-describedby="helper-text-explanation"
                                     placeholder="1"
+                                    value="1"
                                     required />
                                 <button class="h-8 p-3 bg-gray-100 border border-l-0 border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100" id="increment-button" onclick="increment('quantity-product-${product.id}')" type="button">
                                     <svg class="w-2 h-2 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
@@ -238,7 +280,7 @@
                                     class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
                                     for="standpr-${product.id}">
                                     <div class="block">
-                                        <div class="w-full text-base font-semibold">${product.standard_price}</div>
+                                        <div class="w-full text-base font-semibold">${product.price}</div>
                                         <div class="w-full text-sm">Harga Standar</div>
                                     </div>
                                 </label>
@@ -249,7 +291,7 @@
                                     class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
                                     for="cuspr-${product.id}">
                                     <div class="inline-block space-y-1.5">
-                                        <input onchange="updateStandardPrice(${product.id})" disabled class="w-full py-1 text-sm rounded-sm focus:outline-none focus:ring-0" id="input-cuspr-${product.id}" type="number" />
+                                        <input onchange="customPrice(this, ${product.id})" disabled class="w-full py-1 text-sm rounded-sm focus:outline-none focus:ring-0" id="input-cuspr-${product.id}" type="number" />
                                         <div class="w-full text-sm">Atur Sendiri</div>
                                     </div>
                                 </label>
@@ -261,46 +303,5 @@
                 cartContainer.append(productHtml);
             });
         }
-    </script>
-
-    <script>
-        // function toggleEditPrice(productId) {
-        //     const editPriceSection = $(`#edit-price-product-${productId}`);
-
-        //     editPriceSection.toggleClass('hidden').toggleClass('grid');
-        // }
-
-        // function updateStandardPrice(productId) {
-        //     const customPriceInput = $(`#input-cuspr-${productId}`);
-        //     const customPrice = customPriceInput.val();
-
-        //     const standardPriceText = $(`#standard-price-product-${productId}`);
-        //     standardPriceText.attr('data-standard-price', customPrice)
-
-        //     updatePrice(productId)
-        // }
-
-        // function toggleCustomPriceInput(productId) {
-        //     const customPriceInput = $(`#input-cuspr-${productId}`);
-        //     const customPriceLabel = $(`#cuspr-${productId}`);
-        //     const isChecked = customPriceLabel.prop('checked');
-
-        //     customPriceInput.prop('disabled', !isChecked).val(!isChecked ? '' : customPriceInput.val());
-
-        //     if (!isChecked) {
-        //         resetStandardPrice(productId);
-
-        //         updatePrice(productId)
-        //     }
-        // }
-
-        // function resetStandardPrice(productId) {
-        //     const standardPriceText = $(`#standard-price-product-${productId}`);
-        //     const standardPrice = standardPriceText.data('old-standard-price');
-
-        //     standardPriceText.text(standardPrice).attr('data-standard-price', standardPrice);
-
-        //     updatePrice(productId)
-        // }
     </script>
 @endpush
