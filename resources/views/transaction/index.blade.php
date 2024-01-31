@@ -28,24 +28,31 @@
                     </svg>
                     <span class="sr-only">Close menu</span>
                 </button>
-                <form class="mb-6">
-                    <div class="flex flex-col space-y-2" id="cart-container">
-                        <p class="font-semibold">Belum Pilih Makanan/Minuman</p>
-                    </div>
+                <div class="flex flex-col space-y-2" id="cart-container">
+                    <p class="font-semibold">Belum Pilih Makanan/Minuman</p>
+                </div>
 
-                    <div class="my-5 w-full border border-t bg-black"></div>
-                    <div class="flex w-full items-center justify-between">
-                        <p class="text-sm font-medium">Sub Total</p>
-                        <p class="text-sm font-semibold text-pink-500" id="sub-total-price">0</p>
-                    </div>
-                    <div class="flex w-full items-center justify-between">
-                        <p class="text-sm font-medium">Diskon</p>
-                        <p class="text-sm font-semibold text-pink-500" id="total-diskon">0%</p>
-                    </div>
-                    <div class="flex w-full items-center justify-between">
-                        <p class="text-sm font-medium">Total</p>
-                        <p class="text-sm font-semibold text-pink-500" id="total-price">0</p>
-                    </div>
+                <div class="my-5 w-full border border-t bg-black"></div>
+                <div class="flex w-full items-center justify-between">
+                    <p class="text-sm font-medium">Sub Total</p>
+                    <p class="text-sm font-semibold text-pink-500" id="subtotal-price">0</p>
+                </div>
+                <div class="flex w-full items-center justify-between">
+                    <p class="text-sm font-medium">Diskon</p>
+                    <p class="text-sm font-semibold text-pink-500" id="total-discount">0%</p>
+                </div>
+                <div class="flex w-full items-center justify-between">
+                    <p class="text-sm font-medium">Total</p>
+                    <p class="text-sm font-semibold text-pink-500" id="total-price">0</p>
+                </div>
+                <form class="mb-6" method="POST" action="{{ route('transaction.store') }}">
+                    @csrf
+                    <input id="items-input" name="items" type="text">
+                    <input id="itemtotal-input" name="item_total" type="text" value="0">
+                    <input id="subtotal-input" name="subtotal" type="text" value="0">
+                    <input id="discount-input" name="discount" type="text" value="0">
+                    <input id="total-input" name="total" type="text" value="0">
+
                     <button
                         class="mb-2 mt-4 flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         type="submit">Create Bills</button>
@@ -100,9 +107,24 @@
 
             const total = subtotal - discount;
 
+            $('#subtotal-price').text(subtotal);
+            $('#total-discount').text(`${discountPercentage}%`);
             $('#total-price').text(total);
-            $('#total-diskon').text(`${discountPercentage}%`);
-            $('#sub-total-price').text(subtotal);
+
+            setInputValue(subtotal, discountPercentage, total);
+        }
+
+        function setInputValue(subtotal, discountPercentage, total) {
+            const cartLength = cart.filter(item => item.quantity > 0).length;
+
+            $('#items-input').val(JSON.stringify(cart.map(({
+                image,
+                ...item
+            }) => item)));
+            $('#itemtotal-input').val(cartLength);
+            $('#subtotal-input').val(subtotal);
+            $('#discount-input').val(discountPercentage);
+            $('#total-input').val(total);
         }
 
         function isProductInCart(productId) {

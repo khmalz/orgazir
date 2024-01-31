@@ -12,11 +12,13 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
         'code',
+        'items',
         'item_total',
+        'total',
+        'discount',
+        'subtotal',
         'status',
-        'amount',
     ];
 
     /**
@@ -31,8 +33,12 @@ class Transaction extends Model
         });
     }
 
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class, 'product_id');
-    }
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'items' => 'array',
+    ];
 }

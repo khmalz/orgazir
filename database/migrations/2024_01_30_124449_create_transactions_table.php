@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->ulid('code')->unique();
+            $table->json('items');
             $table->string('item_total');
+            $table->string('subtotal');
+            $table->integer('discount')->default(0);
+            $table->string('total');
             $table->enum('status', ['pending', 'success'])->default('pending');
-            $table->string('amount');
             $table->timestamps();
         });
     }

@@ -31,9 +31,9 @@ Route::get('/cashier/list', function () {
     return view('cashier.index');
 })->name('cashier.index');
 
-Route::get('/transaction/history', function () {
-    return view('transaction.history');
-})->name('transaction.history');
+Route::get('/transaction/pay', [TransactionController::class, 'index'])->name('transaction.pay');
+Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
+Route::get('/transaction/history', [TransactionController::class, 'history'])->name('transaction.history');
 
 Route::get('pdf', function () {
     $invoiceNumber = '123456';
@@ -51,7 +51,5 @@ Route::get('pdf', function () {
     $pdf = Pdf::loadView('invoice.pdf', compact('invoiceNumber', 'date', 'items', 'subtotal', 'discount', 'total'));
     return $pdf->stream('invoice.pdf');
 })->name('pdf');
-
-Route::get('/transaction/pay', [TransactionController::class, 'index'])->name('transaction.pay');
 
 require __DIR__ . '/auth.php';
