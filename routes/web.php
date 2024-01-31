@@ -1,6 +1,5 @@
 <?php
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
 
@@ -35,21 +34,6 @@ Route::get('/transaction/pay', [TransactionController::class, 'index'])->name('t
 Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
 Route::get('/transaction/history', [TransactionController::class, 'history'])->name('transaction.history');
 
-Route::get('pdf', function () {
-    $invoiceNumber = '123456';
-    $date = now()->format('Y-m-d H:i:s');
-
-    $items = [
-        ['name' => 'Product 1', 'quantity' => 2, 'price' => 10, 'total' => 20],
-        ['name' => 'Product 2', 'quantity' => 1, 'price' => 15, 'total' => 15],
-    ];
-
-    $subtotal = array_sum(array_column($items, 'total'));
-    $discount = 5; // Example discount amount
-    $total = $subtotal - $discount;
-
-    $pdf = Pdf::loadView('invoice.pdf', compact('invoiceNumber', 'date', 'items', 'subtotal', 'discount', 'total'));
-    return $pdf->stream('invoice.pdf');
-})->name('pdf');
+Route::get('transaction/{transaction}/pdf', [TransactionController::class, 'pdf'])->name('transaction.pdf');
 
 require __DIR__ . '/auth.php';

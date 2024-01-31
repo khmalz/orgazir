@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -33,7 +34,13 @@ class TransactionController extends Controller
             'total' => $request->total,
         ]);
 
-        return $transaction;
+        return to_route('transaction.pdf', $transaction);
+    }
+
+    public function pdf(Transaction $transaction)
+    {
+        $pdf = Pdf::loadView('invoice.pdf', compact('transaction'));
+        return $pdf->stream("invoice.pdf");
     }
 
     public function history()

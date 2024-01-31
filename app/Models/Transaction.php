@@ -41,4 +41,9 @@ class Transaction extends Model
     protected $casts = [
         'items' => 'array',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'code';
+    }
 }

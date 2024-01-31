@@ -49,12 +49,9 @@
 <body>
     <div class="invoice">
         <div class="header">
-            <h2>Invoice</h2>
-            <p>#{{ $invoiceNumber }}</p>
-        </div>
-
-        <div class="details">
-            <p>Date: {{ $date }}</p>
+            <h2>Struk</h2>
+            <h4>Toko ABC</h4>
+            <p>#{{ $transaction->code }}</p>
         </div>
 
         <table>
@@ -67,21 +64,25 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($items as $item)
+                @foreach ($transaction->items as $item)
                     <tr>
                         <td>{{ $item['name'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{{ $item['price'] }}</td>
-                        <td>{{ $item['total'] }}</td>
+                        <td>{{ number_format($item['standard_price'], 0, ',', '.') }}</td>
+                        <td>{{ number_format($item['quantity'] * $item['standard_price'], 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
 
         <div class="totals">
-            <p><strong>Subtotal: {{ $subtotal }}</strong></p>
-            <p>Discount: {{ $discount }}</p>
-            <p><strong>Total: {{ $total }}</strong></p>
+            <p><strong>Subtotal: Rp{{ number_format($transaction->subtotal, 0, ',', '.') }}</strong></p>
+            <p>Diskon: {{ $transaction->discount }}%</p>
+            <p><strong>Total: Rp{{ number_format($transaction->total, 0, ',', '.') }}</strong></p>
+        </div>
+
+        <div class="details">
+            <p>{{ $transaction->created_at->format('d F Y H:i:s') }}</p>
         </div>
     </div>
 </body>
