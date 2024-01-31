@@ -30,8 +30,22 @@
                 </button>
                 <form class="mb-6">
                     <div class="flex flex-col space-y-2" id="cart-container">
+                        <p class="font-semibold">Belum Pilih Makanan/Minuman</p>
                     </div>
 
+                    <div class="my-5 w-full border border-t bg-black"></div>
+                    <div class="flex w-full items-center justify-between">
+                        <p class="text-sm font-medium">Sub Total</p>
+                        <p class="text-sm font-semibold text-pink-500" id="sub-total-price">0</p>
+                    </div>
+                    <div class="flex w-full items-center justify-between">
+                        <p class="text-sm font-medium">Diskon</p>
+                        <p class="text-sm font-semibold text-pink-500" id="total-diskon">0%</p>
+                    </div>
+                    <div class="flex w-full items-center justify-between">
+                        <p class="text-sm font-medium">Total</p>
+                        <p class="text-sm font-semibold text-pink-500" id="total-price">0</p>
+                    </div>
                     <button
                         class="mb-2 mt-4 flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         type="submit">Create Bills</button>
@@ -55,8 +69,8 @@
                         <div class="px-5 pb-5">
                             <div>
                                 <button
-                                    class="rounded-lg border border-blue-600 px-5 py-2.5 text-center text-sm font-medium text-blue-500 hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    onclick="addToCart(this)">
+                                    class="card-button-unactive rounded-lg border border-blue-600 px-5 py-2.5 text-center text-sm font-medium hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    id="item-{{ $product->id }}" onclick="addToCart(this)">
                                     Add item
                                 </button>
                             </div>
@@ -73,6 +87,37 @@
     <script>
         let cart = [];
 
+        function calculateTotals() {
+            let subtotal = 0;
+
+            // Iterate through each item in the cart
+            for (let item of cart) {
+                const quantity = parseInt(item.quantity) || 1;
+                const price = parseFloat(item.standard_price) || 0;
+                console.log(item.standard_price)
+
+                subtotal += quantity * price;
+            }
+
+            // Assume a discount of 0% (no discount)
+            const discountPercentage = 10;
+            const discount = (subtotal * discountPercentage) / 100;
+
+            // Calculate total after discount
+            const total = subtotal - discount;
+
+            console.log({
+                total,
+                discount,
+                subtotal
+            })
+
+            // Save the results to HTML elements
+            $('#total-price').text(total);
+            $('#total-diskon').text(`${discountPercentage}%`);
+            $('#sub-total-price').text(subtotal);
+        }
+
         function isProductInCart(productId) {
             return cart.some(item => item.id === productId);
         }
@@ -82,103 +127,161 @@
             if (!isProductInCart(data.id)) {
                 cart.push(data);
                 updateCartContainer();
+
+                $(button).removeClass('card-button-unactive').addClass('card-button-active')
+                    .attr('onclick', '') // Menghapus atribut onclick
+                    .text('Terpilih');
+
+                calculateTotals()
             }
+        }
+
+        function removeFromCart(productId) {
+            // Buat array baru tanpa produk yang akan dihapus
+            cart = cart.filter(item => item.id !== productId);
+
+            const buttonId = `#item-${productId}`;
+            $(buttonId).removeClass('card-button-active').addClass('card-button-unactive')
+                .attr('onclick', 'addToCart(this)')
+                .text('Add item');
+
+            updateCartContainer();
+            calculateTotals()
         }
 
         function updatePrice(productId) {
             const quantityInput = $(`#quantity-product-${productId}`);
-            const standardPrice = parseInt($(`#standard-price-product-${productId}`).data('standard-price')) || 0;
+            const quantityValue = quantityInput.val() || 1;
 
-            // Dapatkan nilai dari elemen input quantity
-            const quantityValue = parseInt(quantityInput.val()) || 1;
+            const standardPrice = $(`#standard-price-product-${productId}`).data('standard-price');
 
-            // Hitung total harga
             const totalPrice = quantityValue * standardPrice;
 
-            // Update teks pada elemen total-price
             $(`#total-price-product-${productId}`).text(totalPrice);
+            calculateTotals()
         }
 
         function updateCartContainer() {
             let cartContainer = $('#cart-container');
 
-            // Bersihkan konten container sebelum menambahkan item baru
             cartContainer.html('');
 
-            // Loop melalui setiap produk di keranjang
             cart.forEach((product, index) => {
-                // Buat elemen HTML untuk menampilkan detail produk
                 let productHtml = `
-                <div id="cart-${product.id}">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-1.5">
-                            <img class="w-20 h-20 border-2 border-white rounded-lg dark:border-gray-800" src="${product.image}" alt="${product.name}" />
-                            <div>
-                                <h6 class="text-base font-medium">${product.name}</h6>
-                                <div class="flex items-center group">
-                                <p class="inline-block text-sm font-medium text-gray-800"data-standard-price="${product.standard_price}" id="standard-price-product-${product.id}">${product.standard_price}</p>
-                                <span class="mx-1">|</span>
-                                <p class="inline-block text-sm font-medium text-pink-600" id="total-price-product-${product.id}">${product.standard_price}</p>
-                                <button class="ms-1.5 hidden h-6 w-7 items-center justify-center rounded border-gray-300 bg-gray-100 p-1 hover:bg-gray-200 focus:outline-none focus:ring-0 group-hover:flex" id="edit-button" type="button">
-                                    <svg class="h-3.5 w-3.5 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="current" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.8 17.8-6.4 2.1 2.1-6.4m4.3 4.3L19 9a3 3 0 0 0-4-4l-8.4 8.6m4.3 4.3-4.3-4.3m2.1 2.1L15 9.1m-2.1-2 4.2 4.2" />
-                                    </svg>
-                                </button>
+                    <div id="cart-${product.id}">
+                        <div class="flex items-center justify-between transition-all duration-500">
+                            <div class="flex items-center space-x-1.5">
+                                <img class="w-20 h-20 border-2 border-white rounded-lg " src="${product.image}" alt="${product.name}" />
+                                <div>
+                                    <h6 class="text-base font-medium">${product.name}</h6>
+                                    <div class="flex items-center">
+                                        <p class="inline-block text-sm font-medium text-gray-800" data-old-standard-price="${product.standard_price}" data-standard-price="${product.standard_price}" id="standard-price-product-${product.id}">${product.standard_price}</p>
+                                        <span class="mx-1">|</span>
+                                        <p class="inline-block text-sm font-medium text-pink-600" id="total-price-product-${product.id}">${product.standard_price}</p>
+                                        <button onclick="toggleEditPrice(${product.id})" class="ms-1.5 hidden h-6 w-7 items-center justify-center rounded border-gray-300 bg-gray-100 p-1 hover:bg-gray-200 focus:outline-none focus:ring-0" id="edit-button-product-${product.id}" type="button">
+                                            <svg class="h-3.5 w-3.5 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="current" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10.8 17.8-6.4 2.1 2.1-6.4m4.3 4.3L19 9a3 3 0 0 0-4-4l-8.4 8.6m4.3 4.3-4.3-4.3m2.1 2.1L15 9.1m-2.1-2 4.2 4.2" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="flex max-w-[8rem] items-center justify-self-end">
+                                <button class="h-8 p-3 bg-gray-100 border border-r-0 border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100" id="decrement-button" onclick="decrement('quantity-product-${product.id}')" type="button">
+                                    <svg class="w-2 h-2 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                    </svg>
+                                </button>
+                                <input
+                                    class="block h-11 w-full border-0 py-2.5 text-center text-sm text-gray-900 focus:outline-none focus:ring-0 active:ring-0"
+                                    id="quantity-product-${product.id}"
+                                    onchange="updatePrice(${product.id})"
+                                    data-counter-min="1"
+                                    type="text"
+                                    aria-describedby="helper-text-explanation"
+                                    placeholder="1"
+                                    required />
+                                <button class="h-8 p-3 bg-gray-100 border border-l-0 border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100" id="increment-button" onclick="increment('quantity-product-${product.id}')" type="button">
+                                    <svg class="w-2 h-2 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <button onclick="removeFromCart(${product.id})" class="flex items-center justify-center h-8 p-3 text-white bg-gray-100 bg-red-500 border border-red-300 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-100" type="button">
+                                    <span class="text-sm">x</span>
+                                </button>
                         </div>
-                        <div class="flex max-w-[8rem] items-center justify-self-end">
-                            <button class="h-8 p-3 bg-gray-100 border border-r-0 border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100" id="decrement-button" onclick="decrement('quantity-product-${product.id}')" type="button">
-                                <svg class="w-2 h-2 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                </svg>
-                            </button>
-                            <input
-                                class="block h-11 w-full border-0 py-2.5 text-center text-sm text-gray-900 focus:outline-none focus:ring-0 active:ring-0"
-                                id="quantity-product-${product.id}"
-                                onchange="updatePrice(${product.id})"
-                                data-counter-min="1"
-                                type="text"
-                                aria-describedby="helper-text-explanation"
-                                placeholder="1"
-                                required />
-                            <button class="h-8 p-3 bg-gray-100 border border-l-0 border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100" id="increment-button" onclick="increment('quantity-product-${product.id}')" type="button">
-                                <svg class="w-2 h-2 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                </svg>
-                            </button>
-                        </div>
+                        <ul class="hidden w-full gap-2 mt-2 md:grid-cols-3" id="edit-price-product-${product.id}">
+                            <li>
+                                <input onchange="toggleCustomPriceInput(${product.id})" class="hidden peer" id="standpr-${product.id}" name="set-price-product-${product.id}" type="radio" value="standard" checked />
+                                <label
+                                    class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
+                                    for="standpr-${product.id}">
+                                    <div class="block">
+                                        <div class="w-full text-base font-semibold">${product.standard_price}</div>
+                                        <div class="w-full text-sm">Harga Standar</div>
+                                    </div>
+                                </label>
+                            </li>
+                            <li>
+                                <input onchange="toggleCustomPriceInput(${product.id})" class="hidden peer" id="cuspr-${product.id}" name="set-price-product-${product.id}" type="radio" value="custom" />
+                                <label
+                                    class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
+                                    for="cuspr-${product.id}">
+                                    <div class="inline-block space-y-1.5">
+                                        <input onchange="updateStandardPrice(${product.id})" disabled class="w-full py-1 text-sm rounded-sm focus:outline-none focus:ring-0" id="input-cuspr-${product.id}" type="number" />
+                                        <div class="w-full text-sm">Atur Sendiri</div>
+                                    </div>
+                                </label>
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="hidden w-full gap-2 mt-2 md:grid-cols-3" id="edit-price">
-                        <li>
-                            <input class="hidden peer" id="standard-price" name="set-price" type="radio" value="standard-price" checked />
-                            <label
-                                class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
-                                for="standard-price">
-                                <div class="block">
-                                <div class="w-full text-base font-semibold">8.000</div>
-                                <div class="w-full text-sm">Harga Standar</div>
-                                </div>
-                            </label>
-                        </li>
-                        <li>
-                            <input class="hidden peer" id="custom-price" name="set-price" type="radio" value="custom-price" />
-                            <label
-                                class="inline-flex items-center justify-between w-full h-20 p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 hover:text-gray-600 peer-checked:border-blue-600 peer-checked:text-blue-600"
-                                for="custom-price">
-                                <div class="inline-block space-y-1.5">
-                                <input class="w-full py-1 text-sm rounded-sm focus:outline-none focus:ring-0" id="custom-price" type="number" />
-                                <div class="w-full text-sm">Atur Sendiri</div>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-                `;
+                    `;
 
                 // Tambahkan elemen produk ke dalam container
                 cartContainer.append(productHtml);
             });
         }
+    </script>
+
+    <script>
+        // function toggleEditPrice(productId) {
+        //     const editPriceSection = $(`#edit-price-product-${productId}`);
+
+        //     editPriceSection.toggleClass('hidden').toggleClass('grid');
+        // }
+
+        // function updateStandardPrice(productId) {
+        //     const customPriceInput = $(`#input-cuspr-${productId}`);
+        //     const customPrice = customPriceInput.val();
+
+        //     const standardPriceText = $(`#standard-price-product-${productId}`);
+        //     standardPriceText.attr('data-standard-price', customPrice)
+
+        //     updatePrice(productId)
+        // }
+
+        // function toggleCustomPriceInput(productId) {
+        //     const customPriceInput = $(`#input-cuspr-${productId}`);
+        //     const customPriceLabel = $(`#cuspr-${productId}`);
+        //     const isChecked = customPriceLabel.prop('checked');
+
+        //     customPriceInput.prop('disabled', !isChecked).val(!isChecked ? '' : customPriceInput.val());
+
+        //     if (!isChecked) {
+        //         resetStandardPrice(productId);
+
+        //         updatePrice(productId)
+        //     }
+        // }
+
+        // function resetStandardPrice(productId) {
+        //     const standardPriceText = $(`#standard-price-product-${productId}`);
+        //     const standardPrice = standardPriceText.data('old-standard-price');
+
+        //     standardPriceText.text(standardPrice).attr('data-standard-price', standardPrice);
+
+        //     updatePrice(productId)
+        // }
     </script>
 @endpush

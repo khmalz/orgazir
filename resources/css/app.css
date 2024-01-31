@@ -14,3 +14,13 @@
         -moz-appearance: textfield;
     }
 }
+
+@layer components {
+    .card-button-active {
+        @apply bg-blue-600 text-white;
+    }
+
+    .card-button-unactive {
+        @apply bg-transparent text-blue-600;
+    }
+}
