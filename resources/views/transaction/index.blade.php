@@ -525,16 +525,9 @@
         let cart = [];
 
         function calculateTotals() {
-            const subtotal = cart.reduce((acc, item) => {
-                const quantity = parseInt(item.quantity) || 1;
-                const price = parseFloat(item.price);
-
-                return acc + quantity * price;
-            }, 0);
-
+            const subtotal = cart.reduce((acc, item) => acc + (parseInt(item.quantity) || 1) * (parseFloat(item.price)), 0);
             const discountPercentage = subtotal >= 200000 ? 10 : (subtotal >= 100000 ? 5 : 0);
             const discount = (subtotal * discountPercentage) / 100;
-
             const total = subtotal - discount;
 
             $('#subtotal-price').text(subtotal);
@@ -546,11 +539,12 @@
 
         function setInputValue(subtotal, discountPercentage, total) {
             const cartLength = cart.filter(item => item.quantity > 0).length;
-
-            $('#items-input').val(JSON.stringify(cart.map(({
+            const cartData = cart.map(({
                 image,
                 ...item
-            }) => item)));
+            }) => item);
+
+            $('#items-input').val(JSON.stringify(cartData));
             $('#itemtotal-input').val(cartLength);
             $('#subtotal-input').val(subtotal);
             $('#discount-input').val(discountPercentage);
@@ -563,6 +557,7 @@
 
         function addToCart(button) {
             let data = $(button).closest('#card-header').data('product');
+
             if (!isProductInCart(data.id)) {
                 const product = {
                     id: data.id,
@@ -571,34 +566,32 @@
                     price: data.standard_price,
                     image: data.image,
                     quantity: 1
-                }
+                };
 
                 cart.push(product);
 
-                $(button).removeClass('card-button-unactive').addClass('card-button-active')
-                    .attr('onclick', '')
+                $(button).toggleClass('card-button-unactive card-button-active')
+                    .prop('onclick', null)
                     .text('Terpilih');
 
                 updateCartContainer();
-                calculateTotals()
+                calculateTotals();
             }
         }
 
         function removeFromCart(productId) {
             cart = cart.filter(item => item.id !== productId);
 
-            const buttonId = `#item-${productId}`;
-            $(buttonId).removeClass('card-button-active').addClass('card-button-unactive')
+            $(`#item-${productId}`).toggleClass('card-button-active card-button-unactive')
                 .attr('onclick', 'addToCart(this)')
                 .text('Add item');
 
             updateCartContainer();
-            calculateTotals()
+            calculateTotals();
         }
 
         function updatePrice(productId) {
             const quantityValue = $(`#quantity-product-${productId}`).val();
-
             const standardPrice = $(`#standard-price-product-${productId}`);
             const price = standardPrice.attr('data-price');
             const totalPrice = quantityValue * price;
@@ -617,43 +610,31 @@
         }
 
         function toggleEditPrice(productId) {
-            const editPriceSection = $(`#edit-price-product-${productId}`);
-
-            editPriceSection.toggleClass('hidden').toggleClass('grid');
+            $(`#edit-price-product-${productId}`).toggleClass('hidden grid');
         }
 
         function customPrice(el, productId) {
-            const customPrice = $(el).val();
-            const standardPriceText = $(`#standard-price-product-${productId}`);
-            standardPriceText.attr('data-price', customPrice)
-
+            $(`#standard-price-product-${productId}`).attr('data-price', $(el).val())
             updatePrice(productId);
         }
 
         function toggleCustomPriceInput(productId) {
             const customPriceInput = $(`#input-cuspr-${productId}`);
-            const customPriceLabel = $(`#cuspr-${productId}`);
-            const isChecked = customPriceLabel.prop('checked');
+            const isChecked = $(`#cuspr-${productId}`).prop('checked');
 
-            customPriceInput.prop('disabled', !isChecked).val(!isChecked ? '' : customPriceInput.val());
-
-            if (!isChecked) {
-                resetStandardPrice(productId);
-            }
+            customPriceInput.prop('disabled', !isChecked).val(isChecked ? customPriceInput.val() : '');
+            if (!isChecked) resetStandardPrice(productId);
         }
 
         function resetStandardPrice(productId) {
             const standardPriceText = $(`#standard-price-product-${productId}`);
-            const standardPrice = standardPriceText.attr('data-standard-price');
-
-            $(`#standard-price-product-${productId}`).attr('data-price', standardPrice);
+            standardPriceText.attr('data-price', standardPriceText.data('standard-price'));
 
             updatePrice(productId);
         }
 
         function updateCartContainer() {
-            let cartContainer = $('#cart-container');
-
+            const cartContainer = $('#cart-container');
             cartContainer.html('');
 
             cart.forEach((product, index) => {

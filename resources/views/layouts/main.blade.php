@@ -35,12 +35,8 @@
         function updateCounter(inputId, step) {
             const inputElement = $(`#${inputId}`);
             if (inputElement.length) {
-                let minValue = parseInt(inputElement.data('counter-min')) || 1;
-                let currentValue = parseInt(inputElement.val()) || minValue;
-
-                // Pastikan nilai tidak kurang dari nilai minimum
-                currentValue = Math.max(currentValue + step, minValue);
-
+                currentValue = Math.max((parseInt(inputElement.val()) || minValue) + step, parseInt(inputElement.attr(
+                    'data-counter-min')) || 1);
                 inputElement.val(currentValue).trigger('change');
             }
         }
