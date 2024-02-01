@@ -485,7 +485,7 @@
 
                     <button
                         class="mb-2 mt-4 flex w-full items-center justify-center rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        type="submit">Create Bills</button>
+                        id="create-bill-button" type="submit" disabled>Create Bills</button>
                 </form>
             </div>
         </div>
@@ -522,15 +522,53 @@
 
 @push('scripts')
     <script>
+        let cart = [];
+
         document.addEventListener('DOMContentLoaded', () => {
             const idTransaction = $("main").attr('data-id-transaction')
             if (idTransaction) window.open(`/transaction/${idTransaction}/pdf`, '_blank');
         });
 
-        let cart = [];
+        const addToCart = (button) => {
+            const data = $(button).closest('#card-header').data('product');
 
-        function calculateTotals() {
-            const subtotal = cart.reduce((acc, item) => acc + (parseInt(item.quantity) || 1) * (parseFloat(item.price)), 0);
+            if (!isProductInCart(data.id)) {
+                cart.push({
+                    id: data.id,
+                    category_id: data.category_id,
+                    name: data.name,
+                    price: data.standard_price,
+                    image: data.image,
+                    quantity: 1
+                });
+
+                $(button).toggleClass('card-button-unactive card-button-active')
+                    .prop('onclick', null)
+                    .text('Terpilih');
+
+                updateCartContainer();
+                calculateTotals();
+                toggleActiveBillButton();
+            }
+        }
+
+        const removeFromCart = (productId) => {
+            cart = cart.filter(item => item.id !== productId);
+
+            $(`#item-${productId}`).toggleClass('card-button-active card-button-unactive')
+                .attr('onclick', 'addToCart(this)')
+                .text('Add item');
+
+            updateCartContainer();
+            calculateTotals();
+            toggleActiveBillButton();
+        }
+
+        const toggleActiveBillButton = () => $('#create-bill-button').prop('disabled', cart.length === 0)
+
+        const calculateTotals = () => {
+            const subtotal = cart.reduce((acc, item) => acc + (parseInt(item.quantity) || 1) * (parseFloat(item.price)),
+                0);
             const discountPercentage = subtotal >= 200000 ? 10 : (subtotal >= 100000 ? 5 : 0);
             const discount = (subtotal * discountPercentage) / 100;
             const total = subtotal - discount;
@@ -542,60 +580,22 @@
             setInputValue(subtotal, discountPercentage, total);
         }
 
-        function setInputValue(subtotal, discountPercentage, total) {
-            const cartLength = cart.filter(item => item.quantity > 0).length;
+        const setInputValue = (subtotal, discountPercentage, total) => {
             const cartData = cart.map(({
                 image,
                 ...item
             }) => item);
 
             $('#items-input').val(JSON.stringify(cartData));
-            $('#itemtotal-input').val(cartLength);
+            $('#itemtotal-input').val(cart.length);
             $('#subtotal-input').val(subtotal);
             $('#discount-input').val(discountPercentage);
             $('#total-input').val(total);
         }
 
-        function isProductInCart(productId) {
-            return cart.some(item => item.id === productId);
-        }
+        const isProductInCart = (productId) => cart.some(item => item.id === productId);
 
-        function addToCart(button) {
-            let data = $(button).closest('#card-header').data('product');
-
-            if (!isProductInCart(data.id)) {
-                const product = {
-                    id: data.id,
-                    category_id: data.category_id,
-                    name: data.name,
-                    price: data.standard_price,
-                    image: data.image,
-                    quantity: 1
-                };
-
-                cart.push(product);
-
-                $(button).toggleClass('card-button-unactive card-button-active')
-                    .prop('onclick', null)
-                    .text('Terpilih');
-
-                updateCartContainer();
-                calculateTotals();
-            }
-        }
-
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-
-            $(`#item-${productId}`).toggleClass('card-button-active card-button-unactive')
-                .attr('onclick', 'addToCart(this)')
-                .text('Add item');
-
-            updateCartContainer();
-            calculateTotals();
-        }
-
-        function updatePrice(productId) {
+        const updatePrice = (productId) => {
             const quantityValue = $(`#quantity-product-${productId}`).val();
             const standardPrice = $(`#standard-price-product-${productId}`);
             const price = standardPrice.attr('data-price');
@@ -614,16 +614,14 @@
             calculateTotals();
         }
 
-        function toggleEditPrice(productId) {
-            $(`#edit-price-product-${productId}`).toggleClass('hidden grid');
-        }
+        const toggleEditPrice = (productId) => $(`#edit-price-product-${productId}`).toggleClass('hidden grid');
 
-        function customPrice(el, productId) {
+        const customPrice = (el, productId) => {
             $(`#standard-price-product-${productId}`).attr('data-price', $(el).val())
             updatePrice(productId);
         }
 
-        function toggleCustomPriceInput(productId) {
+        const toggleCustomPriceInput = (productId) => {
             const customPriceInput = $(`#input-cuspr-${productId}`);
             const isChecked = $(`#cuspr-${productId}`).prop('checked');
 
@@ -631,14 +629,14 @@
             if (!isChecked) resetStandardPrice(productId);
         }
 
-        function resetStandardPrice(productId) {
+        const resetStandardPrice = (productId) => {
             const standardPriceText = $(`#standard-price-product-${productId}`);
             standardPriceText.attr('data-price', standardPriceText.data('standard-price'));
 
             updatePrice(productId);
         }
 
-        function updateCartContainer() {
+        const updateCartContainer = () => {
             const cartContainer = $('#cart-container');
             cartContainer.html('');
 

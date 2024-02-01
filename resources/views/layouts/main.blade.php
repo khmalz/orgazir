@@ -24,15 +24,15 @@
     </div>
 
     <script>
-        function decrement(inputId) {
+        const decrement = (inputId) => {
             updateCounter(inputId, -1);
         }
 
-        function increment(inputId) {
+        const increment = (inputId) => {
             updateCounter(inputId, 1);
         }
 
-        function updateCounter(inputId, step) {
+        const updateCounter = (inputId, step) => {
             const inputElement = $(`#${inputId}`);
             if (inputElement.length) {
                 currentValue = Math.max((parseInt(inputElement.val()) || minValue) + step, parseInt(inputElement.attr(
