@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('subtotal');
             $table->integer('discount')->default(0);
             $table->string('total');
+            $table->string('payment')->default('tunai');
             $table->enum('status', ['pending', 'success'])->default('pending');
             $table->timestamps();
         });

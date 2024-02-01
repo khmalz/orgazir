@@ -82,6 +82,7 @@
         </div>
 
         <div class="details">
+            <p>Pembayaran: <span style="text-transform: uppercase">{{ $transaction->payment }}</span></p>
             <p>{{ $transaction->created_at->format('d F Y H:i:s') }}</p>
         </div>
     </div>

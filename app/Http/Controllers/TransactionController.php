@@ -18,21 +18,18 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $datas = $request->validate([
             'items' => ['required', 'string', 'json'],
             'item_total' => ['required', 'numeric'],
             'subtotal' => ['required', 'numeric'],
             'discount' => ['required', 'numeric'],
             'total' => ['required', 'numeric'],
+            'payment' => ['required', 'string'],
         ]);
 
-        $transaction = Transaction::create([
-            'items' => json_decode($request->items, true),
-            'item_total' => $request->item_total,
-            'subtotal' => $request->subtotal,
-            'discount' => $request->discount,
-            'total' => $request->total,
-        ]);
+        $datas['items'] = json_decode($datas['items'], true);
+
+        $transaction = Transaction::create($datas);
 
         return to_route('transaction.pdf', $transaction);
     }
