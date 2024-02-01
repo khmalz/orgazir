@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-    <div>
+    <main data-id-transaction="{{ session('success') }}">
         <div class="mb-5 flex w-full items-center justify-between rounded-lg bg-white p-5">
             <h2 class="text-xl font-semibold">Transaksi</h2>
             <button class="rounded-lg px-5 py-2.5 text-center text-sm font-medium focus:outline-none focus:ring-0"
@@ -56,7 +56,7 @@
                                 <div class="grid grid-cols-2 md:grid-cols-4">
                                     <div>
                                         <input class="peer hidden" id="tunai-option" name="payment" type="radio"
-                                            value="cash">
+                                            value="tunai" checked>
                                         <label
                                             class="inline-flex w-full cursor-pointer items-center justify-between rounded-lg border-2 border-cyan-200 bg-white p-2.5 text-cyan-500 hover:bg-cyan-50 hover:text-cyan-600 peer-checked:border-cyan-600 peer-checked:text-cyan-600"
                                             for="tunai-option">
@@ -517,11 +517,16 @@
             </div>
         </div>
 
-    </div>
+    </main>
 @endsection
 
 @push('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const idTransaction = $("main").attr('data-id-transaction')
+            if (idTransaction) window.open(`/transaction/${idTransaction}/pdf`, '_blank');
+        });
+
         let cart = [];
 
         function calculateTotals() {

@@ -31,7 +31,7 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create($datas);
 
-        return to_route('transaction.pdf', $transaction);
+        return to_route('transaction.pay')->with('success', $transaction->code);
     }
 
     public function pdf(Transaction $transaction)
