@@ -1,0 +1,4 @@
+1. buka terminal dan ketikkan npm run dev / npm run build
+2. buka terminal baru dan ketikkan php artisan ser
+3. buka url 127.0.0.1:8000/transaction/pay 
+4. jalankan fungsi aplikasi

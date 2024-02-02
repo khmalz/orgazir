@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-    <main data-id-transaction="{{ session('success') }}">
+    <main>
         <div class="mb-5 flex w-full items-center justify-between rounded-lg bg-white p-5">
             <h2 class="text-xl font-semibold">Transaksi</h2>
             <button class="rounded-lg px-5 py-2.5 text-center text-sm font-medium focus:outline-none focus:ring-0"
@@ -523,11 +523,6 @@
 @push('scripts')
     <script>
         let cart = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const idTransaction = $("main").attr('data-id-transaction')
-            if (idTransaction) window.open(`/transaction/${idTransaction}/pdf`, '_blank');
-        });
 
         const addToCart = (button) => {
             const data = $(button).closest('#card-header').data('product');
