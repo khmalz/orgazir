@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionController;
 
@@ -22,9 +23,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/product/list', function () {
-    return view('product.index');
-})->name('product.index');
+Route::resource('product', ProductController::class);
 
 Route::get('/cashier/list', function () {
     return view('cashier.index');
